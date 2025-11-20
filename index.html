@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Solar System</title>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.min.js"
+			integrity="sha512-jOTg6ikYiHx1LvbSOucnvZi4shXbaovZ91+rfViIiUFLgAJK+k1oQtGEaLvDB8rsZwEfUksTgmhrxdvEDykuzQ=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		></script>
+		<script src="JS/input.js"></script>
+		<script src="JS/physics.js"></script>
+		<script src="JS/render.js"></script>
+		<script src="JS/celestialBody.js"></script>
+		<script src="JS/camera.js"></script>
+		<script src="JS/main.js"></script>
+	</head>
+	<body style="margin: auto; background-color: black; color: aliceblue">
+		<button
+			style="position: fixed; margin: 10px; right: 10px"
+			id="pause"
+			onclick="pause()"
+		>
+			Pause/Play
+		</button>
+		<div
+			id="container"
+			style="position: fixed; top: 0; height: 100%; width: 100%; z-index: -1"
+		></div>
+	</body>
+</html>
