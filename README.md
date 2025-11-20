@@ -34,12 +34,13 @@ Next steps include: future pathing, leapfrog integration, realistic scaling and 
 **-- Versioning & Project History--**
 1. `src/` contains the latest active build (which will be run by the link above)
 2. `versions/` contains preserver builds, e.g:
-`versions/
+```versions/
  ├─ v1-basic-2d/
  ├─ v2-improved-orbits/
  ├─ v3-leapfrog-integration/
  ├─ v4-threejs-experiment/
- └─ …`
+ └─ …
+ ```
 3. Git Tags for major releases too!
 
 **--**
