@@ -4,11 +4,7 @@ Coding Languages: HTML / JS (P5 / Three.js - in the future) | Category: Simulati
 Solar-System is a long-term physics simulation project that will grow from a simple 2D orbital model into a fully traversable 3D universe.
 
 Currently, it's a p5.js-based 2D system featuring realistic Newtonian gravity and basic orbital physics.
-Next steps include:
-- future pathing
-- leapfrog integration
-- realistic scaling
-- 3D
+Next steps include: future pathing, leapfrog integration, realistic scaling and 3D.
 
 **-- Features (Current) --**
 - 2D orbital simulation in p5.js
