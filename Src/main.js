@@ -42,7 +42,6 @@ function windowResized() {
 function initialiseCelestialBodies() {
 	const data = [
 		['Sólwyn-A', '', 0, 0, 500, [0, 0]],
-		['Sólwyn-D', '', 10000, 0, 500, [0, 20]],
 		['Sólwyn-C', 'Bjarrûn', 10000, 0, 40, [0, -30]],
 		['Sólwyn-CA', 'Rúnfael', 10080, 0, 2, [0, -40]],
 		['Sólwyn-CB', 'Ruby', 9920, 0, 5, [0, -25]],
