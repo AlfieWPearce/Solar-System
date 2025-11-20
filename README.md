@@ -27,7 +27,7 @@ Next steps include: future pathing, leapfrog integration, realistic scaling and 
 **-- How to Use--**
 1. Open: [Click me!](https://alfiewpearce.github.io/Solar-System/)
 2. Watch the planets do their thing
-3. Tinker with speeds, spawn bodies, or switch renderers (in future versions)
+3. (In future versions) tinker with speeds, spawn bodies, or switch renderers
    
 **--**
 
