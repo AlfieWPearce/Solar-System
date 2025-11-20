@@ -36,4 +36,4 @@ Next steps include:
 **--**
 
 >A living simulation project with no final form. Expect updates, rewrites, experiments, and the occasional black hole 
->(../index.html)[Return to Portfolio]
+>[Return to Portfolio](../index.html)
