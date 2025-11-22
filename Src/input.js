@@ -20,15 +20,16 @@ function pause() {
  *  - 0 - unfollow
  */
 function keyPressed() {
+	console.log(key, keyCode);
 	//Pause
 	if (key === ` ` || key === 'Spacebar') return pause();
 
 	//Speed Control
-	if (keyCode === UP_ARROW || keyCode === RIGHT_ARROW) {
+	if (key == `ArrowUp` || key == `ArrowRight`) {
 		time = Math.min(time + 1, 20);
 		return;
 	}
-	if (keyCode === UP_ARROW || keyCode === RIGHT_ARROW) {
+	if (key == `ArrowDown` || key == `ArrowLeft`) {
 		time = Math.max(time - 1, 1);
 		return;
 	}
@@ -36,24 +37,40 @@ function keyPressed() {
 	//Numeric camera follow (1-based index for humans)
 	if (key >= `0` && key <= `9`) {
 		const targetIdx = parseInt(key, 10) - 1;
-		if (idx === -1) {
-			camera.following = null;
-			return;
-		}
-		if (targetIdx >= celestialBodies.length) return;
-		camera.following = targetIdx;
+		camera.following =
+			targetIdx >= 0 && targetIdx < celestialBodies.length ? targetIdx : null;
 	}
 }
 /**
  * Camera
  */
-function mousePressed() {
+function startInput(mouseX, mouseY) {
 	if (mouseY < 40) return;
 	cameraSelect(mouseX, mouseY);
 }
-function mouseDragged() {
+function mousePressed() {
+	startInput(mouseX, mouseY);
+}
+function touchStarted() {
+	startInput(touchX, touchY);
+}
+
+function moveInput(mouseX, mouseY) {
 	cameraMove(mouseX, mouseY);
 }
-function mouseReleased() {
+function mouseDragged() {
+	moveInput(mouseX, mouseY);
+}
+function touchMoved() {
+	moveInput(touchX, touchY);
+}
+
+function endInput(mouseX, mouseY) {
 	cameraRemove(mouseX, mouseY);
+}
+function mouseReleased() {
+	endInput(mouseX, mouseY);
+}
+function touchEnded() {
+	endInput(touchX, touchY);
 }

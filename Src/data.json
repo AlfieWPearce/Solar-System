@@ -46,16 +46,8 @@
 			"nickname": "Cyrthon",
 			"pos": { "x": 4200, "y": 0 },
 			"radius": 4.5,
-			"velocity": [-1, -0.77],
+			"velocity": [0, -0.77],
 			"density": 1.0
-		},
-		{
-			"label": "Shardfall",
-			"nickname": "The Wanderer",
-			"pos": { "x": 2000, "y": -20 },
-			"radius": 1.2,
-			"velocity": [0, 0],
-			"density": 0.9
 		}
 	]
 }

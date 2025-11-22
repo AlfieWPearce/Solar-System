@@ -9,7 +9,7 @@ const planetDensity = 1; //mass proxy (kg per "pixel unit")
 let celestialBodies = []; //array of CelestialBody instances
 
 let paused = false;
-let time = 10; //Physics sub-steps per frame (1..n)
+let time = 1; //Physics sub-steps per frame (1..n)
 
 /**
  * Runs on application setup (P5)
