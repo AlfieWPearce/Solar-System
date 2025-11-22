@@ -1,44 +1,36 @@
 //UI stats
-const trailLength = 50;
+const TRAIL_LENGTH = 50;
 
 /**
  * Runs per draw frame
+ * Handles Rendering a frame, & physics stepping
  */
 function draw() {
 	push();
 	background(0);
 
+	///Physics updates: perform `time` iterations per fraome when not paused
 	if (!paused) {
 		for (let t = 0; t < time; t++) {
-			//Update physics
-			celestialBodies.forEach((body) => {
-				body.update(celestialBodies);
-			});
+			for (let idx = 0, n = celestialBodies.length; idx < n; idx++) {
+				celestialBodies[idx].update(celestialBodies);
+			}
 		}
+		celestialBodies = handleCollisions(celestialBodies);
 	}
 
 	//Make changes to camera position and zoom
 	applyCamera();
 
-	//Draw trails
-	celestialBodies.forEach((body) => {
-		drawTrail(body);
-	});
-
-	//Draw paths
-	// computeFuturePaths(1000, 1);
-	// celestialBodies.forEach((body) => {
-	// 	drawFuturePath(body);
-	// });
-
-	//Draw bodies
-	celestialBodies.forEach((body) => {
-		drawCelestialBody(body);
-	});
+	//Loop through celestial bodies
+	for (let idx = 0, n = celestialBodies.length; idx < n; idx++) {
+		drawTrail(celestialBodies[idx]);
+		drawCelestialBody(celestialBodies[idx]);
+	}
 
 	pop();
 
-	//Draw no touch
+	//Top UI Band (non-world)
 	fill(200, 200);
 	rect(0, 0, width, 40);
 
@@ -48,9 +40,10 @@ function draw() {
 		textSize(30);
 		text(`PAUSED`, width / 2, 5);
 	}
-	//Draw information if there is information
-	if (camera.following === null) return;
-	drawInformation(celestialBodies[camera.following]);
+
+	//If following a body, draw its info overlay
+	if (camera.following !== null && celestialBodies[camera.following])
+		drawInformation(celestialBodies[camera.following]);
 }
 
 /**
@@ -62,21 +55,19 @@ function drawCelestialBody(body) {
 	circle(body.pos[0], body.pos[1], body.radius * 2);
 }
 
-function drawFuturePath(body) {
-	fill(body.colour);
-	body.futurePath.forEach((p) => circle(p[0], p[1], body.radius));
-}
-
 /**
  * Draws a trail behind each celestial body
  * @param {CelestialBody} body The body to draw the trail of
  */
 function drawTrail(body) {
-	for (let idx in body.trail) {
+	const len = body.trail.length;
+	for (let idx = 0; idx < len; idx++) {
 		const p = body.trail[idx];
-		const alpha = map(idx, -1, body.trail.length + 1, 0, 255);
-		const size = map(idx, -1, body.trail.length + 1, 0, 1);
-		fill(body.colour[0], body.colour[1], body.colour[2], alpha);
+		//Alpha and size ramp: older points more transparent and smaller
+		const alpha = map(idx, 0, len - 1, 40, 255);
+		const size = map(idx, 0, len - 1, 0.2, 1);
+		const [r, g, b] = body.colour;
+		fill(r, g, b, alpha);
 		circle(p[0], p[1], body.radius * 2 * size);
 	}
 }
@@ -89,12 +80,13 @@ function drawInformation(target) {
 	fill(0);
 	textSize(20);
 	textAlign(LEFT, TOP);
-	text(target.label, 10, 10);
-	const w = textWidth(target.label);
+	if (target.label) text(target.label, 10, 10);
+	const w = textWidth(target?.label ?? ``);
 	textSize(15);
 	textStyle(ITALIC);
 	if (target.nickname) text(`(${target.nickname})`, 20 + w, 17);
 	textStyle(NORMAL);
+
 	fill(200, 200);
 	text(`${target.mass / 1000}Mg`, 10, 50);
 	text(`${target.radius}km`, 10, 70);

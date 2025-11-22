@@ -1,22 +1,18 @@
+//main.js
+// --bootstrapping, initial data, utils
+
 'use strict';
 
-//Global Variables
-//Universal Constants
-//Gravitational constant of the universe
-const G = 0.2;
+//Simulation globals
+const planetDensity = 1; //mass proxy (kg per "pixel unit")
 
-//Approx density of planets
-const planetDesnity = 1; //kg per pixel
+let celestialBodies = []; //array of CelestialBody instances
 
-//Array of bodies
-const celestialBodies = [];
-
-//Time
 let paused = false;
-let time = 1;
+let time = 10; //Physics sub-steps per frame (1..n)
 
 /**
- * Runs on application setup
+ * Runs on application setup (P5)
  */
 function setup() {
 	const canvas = createCanvas(window.innerWidth, window.innerHeight);
@@ -26,7 +22,7 @@ function setup() {
 	ellipseMode(CENTER);
 	noStroke();
 
-	initialiseCelestialBodies();
+	loadSystem();
 }
 
 /**
@@ -39,7 +35,32 @@ function windowResized() {
 /**
  * Creates Bodies
  */
+async function loadSystem() {
+	const res = await fetch('Src/data.json');
+	const json = await res.json();
+
+	json.bodies.forEach((body) => {
+		celestialBodies.push(
+			new CelestialBody(
+				body.label,
+				body.nickname,
+				body.pos,
+				body.radius,
+				body.velocity,
+				body.density
+			)
+		);
+	});
+	G = json.G;
+
+	//Center camera on first body
+	if (celestialBodies.length > 0) camera.following = 0;
+}
+/**
+ * @deprecated
+ */
 function initialiseCelestialBodies() {
+	G = 0.0008;
 	const data = [
 		['Sólwyn-A', '', 0, 0, 500, [0, 0]],
 		['Sólwyn-C', 'Bjarrûn', 10000, 0, 40, [0, -30]],
@@ -53,6 +74,11 @@ function initialiseCelestialBodies() {
 	data.forEach(([name, nick, x, y, radius, vel]) => {
 		celestialBodies.push(new CelestialBody(name, nick, { x, y }, radius, vel));
 	});
+
+	//Center camera on first body
+	if (celestialBodies.length > 0) {
+		camera.pos = [...celestialBodies[0].pos];
+	}
 }
 
 //====Helper====
