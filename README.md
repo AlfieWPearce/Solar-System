@@ -12,13 +12,13 @@ Next steps include: future pathing, leapfrog integration, realistic scaling and 
 - Velocity vectors and trails
 - Basic Newtonian gravitational model
 - Smooth rendering with a modular code structure
+- Leapfrog (Verlet-style) integration
+- Time-step controls & fast-forward
 
 **--**
 
 **-- Planned / Roadmap --**
 - Trace paths
-- Leapfrog (Verlet-style) integration
-- Time-step controls & fast-forward
 - 3D renderer (three.js)
 - First-person traversal mode
 
@@ -34,7 +34,8 @@ Next steps include: future pathing, leapfrog integration, realistic scaling and 
 **-- Versioning & Project History--**
 1. `src/` contains the latest active build (which will be run by the link above)
 2. `versions/` contains preserver builds, e.g:
-```versions/
+```
+versions/
  ├─ v1-basic-2d/
  ├─ v2-improved-orbits/
  ├─ v3-leapfrog-integration/
