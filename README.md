@@ -1,7 +1,7 @@
 # Solar-System
 Coding Languages: HTML / JS (P5 / Three.js - in the future) | Category: Simulation | Difficulty Evolving
 
-Solar-System is a long-term physics simulation project that will grow from a simple 2D orbital model into a fully traversable 3D universe.
+Solar System is a long-term physics simulation project that will evolve from a simple 2D orbital model into a fully traversable 3D universe.
 
 Currently, it's a p5.js-based 2D system featuring realistic Newtonian gravity and basic orbital physics.
 Next steps include: future pathing, leapfrog integration, realistic scaling and 3D.
@@ -34,14 +34,14 @@ Next steps include: future pathing, leapfrog integration, realistic scaling and 
 **-- Versioning & Project History--**
 1. `src/` contains the latest active build (which will be run by the link above)
 2. `versions/` contains preserver builds, e.g:
-```
+`
 versions/
- ├─ v1-basic-2d/
- ├─ v2-improved-orbits/
- ├─ v3-leapfrog-integration/
+ ├─ v1-basic/
+ ├─ v2-leapfrog-integration/
+ ├─ v3-paths-UI/
  ├─ v4-threejs-experiment/
  └─ …
- ```
+`
 3. Git Tags for major releases too!
 
 **--**
