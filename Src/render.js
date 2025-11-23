@@ -12,11 +12,9 @@ function draw() {
 	///Physics updates: perform `time` iterations per fraome when not paused
 	if (!paused) {
 		for (let t = 0; t < time; t++) {
-			for (let idx = 0, n = celestialBodies.length; idx < n; idx++) {
-				celestialBodies[idx].update(celestialBodies);
-			}
+			updateBodies(celestialBodies);
+			celestialBodies = handleCollisions(celestialBodies);
 		}
-		celestialBodies = handleCollisions(celestialBodies);
 	}
 
 	//Make changes to camera position and zoom

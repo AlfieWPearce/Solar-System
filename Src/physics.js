@@ -8,62 +8,68 @@ let G; //Gravitational constant (simulation units) - set by data.js
 
 /**
  * Updates acceleration and position for one body due to all others
- * This is using Explicit Euler Integration (I have explained these in the documentation)
+ * This is using Leapfrog Integration (I have explained these in the documentation)
  */
-function updateBody(body, allBodies) {
-	//Local Alias for performance
-	const [bx, by] = body.pos;
-	const m = body.mass;
+function updateBodies(allBodies) {
+	//First half-kick v(t + 0.5)
+	for (let b of allBodies) {
+		const [ax, ay] = computeAcceleration(b, allBodies);
+		b.velocity[0] += 0.5 * ax;
+		b.velocity[1] += 0.5 * ay;
+	}
 
-	//Accumulate Acceleration
+	//Drifts x(t + 1)
+	for (let b of allBodies) {
+		b.pos[0] += b.velocity[0];
+		b.pos[1] += b.velocity[1];
+
+		if (typeof TRAIL_LENGTH !== `undefined`) {
+			b.trail.push([...b.pos]);
+			if (b.trail.length >= TRAIL_LENGTH) b.trail.shift();
+		}
+	}
+
+	//Second half-kick v(t + 1)
+	for (let b of allBodies) {
+		const [ax, ay] = computeAcceleration(b, allBodies);
+		b.velocity[0] += 0.5 * ax;
+		b.velocity[1] += 0.5 * ay;
+	}
+}
+
+/**
+ * Computes gravitational acceleration on one body due to all other
+ */
+function computeAcceleration(body, allBodies) {
 	let ax = 0;
 	let ay = 0;
+	const [bx, by] = body.pos;
 
-	//Loops through all of the bodies
-	for (let idx = 0, n = allBodies.length; idx < n; idx++) {
-		const other = allBodies[idx];
+	for (let other of allBodies) {
+		//Ignore this body
 		if (other === body) continue;
 
-		//Vector to other body
+		//Distances
 		const dx = other.pos[0] - bx;
 		const dy = other.pos[1] - by;
-
-		//Squared distance and safe distance handling
-		let distsq = dx * dx + dy * dy;
+		let distSq = dx * dx + dy * dy;
 		const minDist = body.radius + other.radius;
 		const minDistSq = minDist * minDist;
 
-		//Safety: collision - soften overly-close interactions
-		if (distsq < minDistSq) distsq = minDistSq;
+		// Soften collisions
+		if (distSq < minDistSq) distSq = minDistSq;
+		if (distSq === 0) continue;
 
-		//Avoid division by 0 - shouldn't happen but just in case :)
-		if (distsq == 0) continue;
+		//Calculate force
+		const invDist = 1 / Math.sqrt(distSq);
+		const force = (G * other.mass) / distSq;
 
-		//Newtonian force magintude
-		//F=G Mm/r^2
-		const force = (G * m * other.mass) / distsq;
-
-		//Compute inverse distance once for direction
-		const invDist = 1 / Math.sqrt(distsq);
-		const fx = force * dx * invDist;
-		const fy = force * dy * invDist;
-
-		//a = F/m
-		ax += fx / m;
-		ay += fy / m;
+		//Calculate acceleration
+		ax += force * dx * invDist;
+		ay += force * dy * invDist;
 	}
 
-	//Integrate Velocity and position (explicit Euler)
-	body.velocity[0] += ax;
-	body.velocity[1] += ay;
-
-	body.pos[0] += body.velocity[0];
-	body.pos[1] += body.velocity[1];
-
-	if (typeof TRAIL_LENGTH !== `undefined`) {
-		body.trail.push([...body.pos]);
-		if (body.trail.length >= TRAIL_LENGTH) body.trail.shift();
-	}
+	return [ax, ay];
 }
 
 /**
@@ -72,7 +78,6 @@ function updateBody(body, allBodies) {
  */
 function handleCollisions(allBodies) {
 	const newBodies = [];
-
 	const toRemove = new Set();
 
 	for (let i = 0; i < allBodies.length; i++) {
@@ -92,10 +97,9 @@ function handleCollisions(allBodies) {
 			const distSq = dx * dx + dy * dy;
 
 			const minDist = a.radius + b.radius;
-			const minDistSq = minDist * minDist;
 
 			//Collision?
-			if (distSq < minDistSq) {
+			if (distSq < minDist * minDist) {
 				if (camera.following === j) camera.following = allBodies.length - 1;
 				//Make new merged body
 				merged = mergeBodies(a, b);
