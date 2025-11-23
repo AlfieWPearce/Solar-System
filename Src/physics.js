@@ -23,6 +23,7 @@ function updateBodies(allBodies) {
 		b.pos[0] += b.velocity[0];
 		b.pos[1] += b.velocity[1];
 
+		//Trails
 		if (typeof TRAIL_LENGTH !== `undefined`) {
 			b.trail.push([...b.pos]);
 			if (b.trail.length >= TRAIL_LENGTH) b.trail.shift();
