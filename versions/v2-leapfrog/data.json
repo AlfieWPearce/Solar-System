@@ -1,0 +1,53 @@
+{
+	"G": 0.08,
+	"bodies": [
+		{
+			"label": "Solun-A",
+			"nickname": "Sol",
+			"pos": { "x": 0, "y": 0 },
+			"radius": 50,
+			"velocity": [0, 0],
+			"density": 0.25
+		},
+		{
+			"label": "Solun-D",
+			"nickname": "Rhylos",
+			"pos": { "x": 580, "y": 0 },
+			"radius": 4,
+			"velocity": [0, -2.076],
+			"density": 1.0
+		},
+		{
+			"label": "Solun-C",
+			"nickname": "Velastra",
+			"pos": { "x": 1080, "y": 0 },
+			"radius": 8,
+			"velocity": [0, -1.521],
+			"density": 1.1
+		},
+		{
+			"label": "Solun-B",
+			"nickname": "Asterin",
+			"pos": { "x": 2050, "y": 0 },
+			"radius": 8,
+			"velocity": [0, -1.104],
+			"density": 1.2
+		},
+		{
+			"label": "Solun-BA",
+			"nickname": "Lunare",
+			"pos": { "x": 2170, "y": 0 },
+			"radius": 2.3,
+			"velocity": [0, -1.744],
+			"density": 0.7
+		},
+		{
+			"label": "Solun-E",
+			"nickname": "Cyrthon",
+			"pos": { "x": 4200, "y": 0 },
+			"radius": 4.5,
+			"velocity": [0, -0.77],
+			"density": 1.0
+		}
+	]
+}
