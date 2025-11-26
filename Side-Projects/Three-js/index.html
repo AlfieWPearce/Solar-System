@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Three.js Solar System</title>
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<button
+			id="topDownBtn"
+			style="position: absolute; top: 10px; left: 10px; z-index: 10"
+		>
+			Top-Down View
+		</button>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.module.js",
+					"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.157.0/examples/jsm/"
+				}
+			}
+		</script>
+		<script type="module">
+			import * as THREE from 'three';
+			import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+			//Basic scene setup
+			const scene = new THREE.Scene();
+			scene.background = new THREE.Color(0x000000);
+
+			const camera = new THREE.PerspectiveCamera(
+				75,
+				window.innerWidth / window.innerHeight,
+				0.1,
+				1000
+			);
+			camera.position.set(0, 2, 5);
+
+			const renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.body.appendChild(renderer.domElement);
+
+			//Lighting
+			const sunLight = new THREE.PointLight(0xffffff, 10);
+			sunLight.position.set(0, 0, 0); //Sun position
+			scene.add(sunLight);
+
+			const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+			scene.add(ambientLight);
+
+			//Sun
+			const sunGeometry = new THREE.SphereGeometry(1, 32, 32);
+			const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+			const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+			scene.add(sun);
+
+			//Single Planet
+			const planetGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+			const planetMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+			const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+			planet.position.x = 5;
+			scene.add(planet);
+
+			//First-person controls
+			const controls = new PointerLockControls(camera, renderer.domElement);
+
+			const topDownBtn = document.getElementById(`topDownBtn`);
+			topDownBtn.addEventListener('click', () => {
+				//Move camera above the solar system
+				camera.position.set(0, 50, 0); //Y=50 to be high up
+				camera.lookAt(0, 0, 0); //Look at the center (Sun)
+
+				//Update the target
+				controls.getObject().position.copy(camera.position);
+			});
+			document.addEventListener('click', () => {
+				controls.lock(); //Click to engage first-person view
+			});
+
+			//Movement Variable
+			const move = { forward: false, backward: false, left: false, right: false };
+			document.addEventListener('keydown', (e) => {
+				if (e.code === 'KeyW') move.forward = true;
+				if (e.code === 'KeyS') move.backward = true;
+				if (e.code === 'KeyA') move.left = true;
+				if (e.code === 'KeyD') move.right = true;
+			});
+			document.addEventListener('keyup', (e) => {
+				if (e.code === 'KeyW') move.forward = false;
+				if (e.code === 'KeyS') move.backward = false;
+				if (e.code === 'KeyA') move.left = false;
+				if (e.code === 'KeyD') move.right = false;
+			});
+
+			function createStars(count) {
+				const geometry = new THREE.BufferGeometry();
+				const positions = [];
+
+				for (let idx = 0; idx < count; idx++) {
+					const x = (Math.random() - 0.5) * 1000; //Spead in X
+					const y = (Math.random() - 0.5) * 1000; //Spead in Y
+					const z = (Math.random() - 0.5) * 1000; //Spead in Z
+					positions.push(x, y, z);
+				}
+
+				geometry.setAttribute(
+					'position',
+					new THREE.Float32BufferAttribute(positions, 3)
+				);
+
+				const material = new THREE.PointsMaterial({
+					color: 0xdddddd,
+					size: 0.5, //tiny dots
+					sizeAttenuation: true,
+				});
+
+				const stars = new THREE.Points(geometry, material);
+				scene.add(stars);
+			}
+			createStars(1000);
+
+			function animate() {
+				requestAnimationFrame(animate);
+
+				//Basic Movement
+				const speed = 0.1;
+				if (move.forward) controls.moveForward(speed);
+				if (move.backward) controls.moveForward(-speed);
+				if (move.left) controls.moveRight(-speed);
+				if (move.right) controls.moveRight(speed);
+
+				renderer.render(scene, camera);
+			}
+			animate();
+		</script>
+	</body>
+</html>

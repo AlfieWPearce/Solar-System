@@ -22,8 +22,9 @@ function draw() {
 
 	//Loop through celestial bodies
 	for (let idx = 0, n = celestialBodies.length; idx < n; idx++) {
-		drawTrail(celestialBodies[idx]);
-		drawCelestialBody(celestialBodies[idx]);
+		const body = celestialBodies[idx];
+		drawTrail(body);
+		drawCelestialBody(body);
 	}
 
 	pop();
@@ -42,6 +43,13 @@ function draw() {
 	//If following a body, draw its info overlay
 	if (camera.following !== null && celestialBodies[camera.following])
 		drawInformation(celestialBodies[camera.following]);
+
+	//Draw fps counter
+	textAlign(LEFT, TOP);
+	textSize(10);
+	fill(0, 255, 0);
+	text(floor(frameRate()), 5, 2);
+	textAlign(CENTER, CENTER);
 }
 
 /**
