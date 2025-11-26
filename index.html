@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -8,32 +8,27 @@
 		<link rel="icon" type="image/x-icon" href="favicon.ico" />
 
 		<!-- Libraries -->
-		<script
-			src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.min.js"
-			integrity="sha512-jOTg6ikYiHx1LvbSOucnvZi4shXbaovZ91+rfViIiUFLgAJK+k1oQtGEaLvDB8rsZwEfUksTgmhrxdvEDykuzQ=="
-			crossorigin="anonymous"
-			referrerpolicy="no-referrer"
-		></script>
+		<script type="importmap">
+			{
+				"imports": {
+					"p5": "https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.esm.min.js",
+					"three": "https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.module.js",
+					"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.157.0/examples/jsm/"
+				}
+			}
+		</script>
 
-		<!-- Code -->
-		<script src="Src/input.js"></script>
-		<script src="Src/physics.js"></script>
-		<script src="Src/render.js"></script>
-		<script src="Src/celestialBody.js"></script>
-		<script src="Src/camera.js"></script>
-		<script src="Src/main.js"></script>
+		<!-- Project Main script (ESM) -->
+		<script type="module" src="Src/main.js"></script>
 	</head>
-	<body style="margin: auto; background-color: black; color: aliceblue">
-		<button
-			style="position: fixed; margin: 10px; right: 10px"
-			id="pause"
-			onclick="pause()"
-		>
+	<body style="margin: 0; background-color: black; color: aliceblue">
+		<button id="pause" style="position: fixed; top: 10px; right: 10px">
 			Pause/Play
 		</button>
+
 		<div
 			id="container"
-			style="position: fixed; top: 0; height: 100%; width: 100%; z-index: -1"
+			style="position: fixed; top: 0; height: 100%; z-index: -1"
 		></div>
 	</body>
 </html>

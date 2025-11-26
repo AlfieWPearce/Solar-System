@@ -1,0 +1,32 @@
+{
+	"name": "solar-system-simulator",
+	"version": "2.0.0",
+	"description": "A 2D solar-system sim that will evolve to a 3D traversable world",
+	"main": "index.html",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"lint": "eslint Src/**/*.js",
+		"lint:fix": "eslint Src/**/*.js --fix"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AlfieWPearce/Solar-System.git"
+	},
+	"author": "Alfie W Pearce",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/AlfieWPearce/Solar-System/issues"
+	},
+	"homepage": "https://github.com/AlfieWPearce/Solar-System#readme",
+	"devDependencies": {
+		"@eslint/css": "^0.14.1",
+		"@eslint/js": "^9.39.1",
+		"@eslint/json": "^0.14.0",
+		"@eslint/markdown": "^7.5.1",
+		"eslint": "^9.39.1",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.4",
+		"globals": "^16.5.0",
+		"prettier": "^3.6.2"
+	}
+}

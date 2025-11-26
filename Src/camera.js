@@ -2,7 +2,7 @@
 // -- Camera / view controls (panning, zoom, follow)
 
 //Camera object holds view state
-const camera = {
+export const camera = {
 	scale: 0.05,
 	zoomBounds: { min: 0.01, max: 5 },
 
@@ -16,19 +16,22 @@ const camera = {
 /**
  * Camera Transform
  */
-function applyCamera() {
-	translate(width / 2, height / 2);
-	scale(camera.scale);
+export function applyCamera(p5Instance, celestialBodies = []) {
+	p5Instance.translate(window.innerWidth / 2, window.innerHeight / 2);
+	p5Instance.scale(camera.scale);
 	if (camera.following != null) camera.pos = [...celestialBodies[camera.following].pos];
-	translate(-camera.pos[0], -camera.pos[1]);
+	p5Instance.translate(-camera.pos[0], -camera.pos[1]);
 }
 
 /**
  * Zooming
  */
-function mouseWheel(event) {
+export function mouseWheel(event) {
 	camera.scale *= event.delta > 0 ? 0.9 : 1.1;
-	camera.scale = constrain(camera.scale, camera.zoomBounds.min, camera.zoomBounds.max);
+	camera.scale = Math.max(
+		camera.zoomBounds.min,
+		Math.min(camera.zoomBounds.max, camera.scale)
+	);
 
 	//Prevent page scroll
 	if (event && event.preventDefault) event.preventDefault();
@@ -39,17 +42,17 @@ function mouseWheel(event) {
  */
 
 /**
- * Begin drag
+ * Camera Select & Begin drag
  */
-function cameraSelect(mouseX, mouseY) {
+export function cameraSelect(mouseX, mouseY, bodies = []) {
 	//World space coordinates of click position
 	const [wx, wy] = screenToWorld(mouseX, mouseY);
 
 	//If not already following, check for click-on-body
 	if (camera.following === null) {
 		let clickedIdx = null;
-		for (let idx in celestialBodies) {
-			const body = celestialBodies[idx];
+		for (let idx = 0; idx < bodies.length; idx++) {
+			const body = bodies[idx];
 			const dx = wx - body.pos[0];
 			const dy = wy - body.pos[1];
 			const distSq = dx * dx + dy * dy;
@@ -68,7 +71,7 @@ function cameraSelect(mouseX, mouseY) {
 			return;
 		}
 	}
-	//Otherwise start panning
+	//Start panning
 	camera.following = null;
 	camera.dragging = true;
 	camera.lastMousePos = [mouseX, mouseY];
@@ -77,7 +80,7 @@ function cameraSelect(mouseX, mouseY) {
 /**
  * Dragging
  */
-function cameraMove(mouseX, mouseY) {
+export function cameraMove(mouseX, mouseY) {
 	if (!camera.dragging) return;
 	//Ajust camera position by mouse delta, scaled to world units
 	camera.pos[0] -= (mouseX - camera.lastMousePos[0]) / camera.scale;
@@ -89,6 +92,16 @@ function cameraMove(mouseX, mouseY) {
 /**
  * End drag
  */
-function cameraRemove(mouseX, mouseY) {
+export function cameraRemove() {
 	camera.dragging = false;
 }
+
+/**
+ * Converts coordinates from screen space to world space
+ * @param {number} x x position
+ * @param {number} y y position
+ */
+export const screenToWorld = (x, y) => [
+	(x - window.innerWidth / 2) / camera.scale + camera.pos[0],
+	(y - window.innerHeight / 2) / camera.scale + camera.pos[1],
+];

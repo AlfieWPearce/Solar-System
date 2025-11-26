@@ -1,7 +1,7 @@
 //celestialBody.js
 // -- celestialBody class (planet / moon / star / asteroid / ...)
 
-class CelestialBody {
+export class CelestialBody {
 	/**
 	 * @param {string} label formal name
 	 * @param {string} nickname short / display name (may be empty)
@@ -9,14 +9,14 @@ class CelestialBody {
 	 * @param {number} radius rendered radius (and mass proxy)
 	 * @param {[number,number]} initialVelocity initial velocity vectpr
 	 */
-	constructor(label, nickname, pos, radius, initialVelocity, density = planetDensity) {
+	constructor(label, nickname, pos, radius, initialVelocity, density) {
 		this.label = label;
 		this.nickname = nickname;
 
 		this.colour = [
-			floor(random(100, 255)),
-			floor(random(100, 255)),
-			floor(random(100, 255)),
+			Math.floor(Math.random() * 155) + 100,
+			Math.floor(Math.random() * 155) + 100,
+			Math.floor(Math.random() * 155) + 100,
 		];
 
 		this.pos = [pos.x, pos.y];
@@ -31,11 +31,5 @@ class CelestialBody {
 
 		//Trail - small buffer of previous positions
 		this.trail = [];
-	}
-	/**
-	 * updates velocity about each body
-	 */
-	update(allBodies) {
-		updateBody(this, allBodies);
 	}
 }

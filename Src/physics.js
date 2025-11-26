@@ -1,8 +1,7 @@
 //Physics.js
 //Physics engine helpers
 
-//Universal Constants
-let G; //Gravitational constant (simulation units) - set by data.js
+import { CelestialBody } from './celestialBody.js';
 
 ('use strict');
 
@@ -10,10 +9,12 @@ let G; //Gravitational constant (simulation units) - set by data.js
  * Updates acceleration and position for one body due to all others
  * This is using Leapfrog Integration (I have explained these in the documentation)
  */
-function updateBodies(allBodies) {
+export function updateBodies(allBodies, data, trailLength = 0) {
+	const { G } = data;
+
 	//First half-kick v(t + 0.5)
 	for (let b of allBodies) {
-		const [ax, ay] = computeAcceleration(b, allBodies);
+		const [ax, ay] = computeAcceleration(b, allBodies, G);
 		b.velocity[0] += 0.5 * ax;
 		b.velocity[1] += 0.5 * ay;
 	}
@@ -24,24 +25,24 @@ function updateBodies(allBodies) {
 		b.pos[1] += b.velocity[1];
 
 		//Trails
-		if (typeof TRAIL_LENGTH !== `undefined`) {
+		if (trailLength > 0) {
 			b.trail.push([...b.pos]);
-			if (b.trail.length >= TRAIL_LENGTH) b.trail.shift();
+			if (b.trail.length >= trailLength) b.trail.shift();
 		}
 	}
 
 	//Second half-kick v(t + 1)
 	for (let b of allBodies) {
-		const [ax, ay] = computeAcceleration(b, allBodies);
+		const [ax, ay] = computeAcceleration(b, allBodies, G);
 		b.velocity[0] += 0.5 * ax;
 		b.velocity[1] += 0.5 * ay;
 	}
 }
 
 /**
- * Computes gravitational acceleration on one body due to all other
+ * Computes gravitational acceleration on one body due to all others
  */
-function computeAcceleration(body, allBodies) {
+function computeAcceleration(body, allBodies, G) {
 	let ax = 0;
 	let ay = 0;
 	const [bx, by] = body.pos;
@@ -77,12 +78,13 @@ function computeAcceleration(body, allBodies) {
  * Handle collisions between all bodies
  * Merges overlapping bodies into a single body
  */
-function handleCollisions(allBodies) {
+export function handleCollisions(allBodies) {
 	const newBodies = [];
 	const toRemove = new Set();
 
 	for (let i = 0; i < allBodies.length; i++) {
 		if (toRemove.has(i)) continue;
+
 		let merged = allBodies[i];
 
 		for (let j = i + 1; j < allBodies.length; j++) {
@@ -101,7 +103,6 @@ function handleCollisions(allBodies) {
 
 			//Collision?
 			if (distSq < minDist * minDist) {
-				if (camera.following === j) camera.following = allBodies.length - 1;
 				//Make new merged body
 				merged = mergeBodies(a, b);
 
