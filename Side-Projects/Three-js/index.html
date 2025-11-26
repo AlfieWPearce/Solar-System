@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -9,15 +9,51 @@
 				margin: 0;
 				overflow: hidden;
 			}
+
+			#minimap {
+				position: fixed;
+				top: 10px;
+				right: 10px;
+
+				width: 150px;
+				height: 150px;
+
+				border-radius: 50px; /*Circular Map*/
+				overflow: hidden; /*Clip Contents*/
+
+				/* border: 0px solid white; Outline */
+				box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+
+				transition: all 0.4s ease-in-out;
+				z-index: 10;
+			}
+			#minimap.expanded {
+				width: 400px;
+				height: 400px;
+
+				top: 50%;
+				bottom: 50%;
+				transform: translate(50%, 50%);
+
+				/* border: 0px solid white; Outline */
+				box-shadow: 0 0 24px rgba(255, 255, 255, 0.7);
+			}
+
+			#hud {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				pointer-events: none;
+				z-index: 20;
+			}
 		</style>
 	</head>
 	<body>
-		<button
-			id="topDownBtn"
-			style="position: absolute; top: 10px; left: 10px; z-index: 10"
-		>
-			Top-Down View
-		</button>
+		<div id="minimap"></div>
+		<canvas id="hud"></canvas>
+
 		<script type="importmap">
 			{
 				"imports": {
@@ -26,118 +62,398 @@
 				}
 			}
 		</script>
+		<script type="module" src="script.js"></script>
+	</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Three.js Solar System — Minimap + HUD</title>
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+				background: #06060a;
+			}
+			body {
+				overflow: hidden;
+			}
+
+			/* main canvas is appended by three */
+			canvas {
+				display: block;
+			}
+
+			/* circular minimap container */
+			#minimap {
+				position: fixed;
+				top: 14px;
+				right: 14px;
+				width: 160px;
+				height: 160px;
+				border-radius: 50%;
+				overflow: hidden;
+				box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8),
+					inset 0 0 40px rgba(255, 255, 255, 0.02);
+				border: 3px solid rgba(255, 255, 255, 0.06);
+				backdrop-filter: blur(2px);
+				cursor: pointer;
+				transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+					height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+					top 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+					right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+					transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+					border-radius 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+					box-shadow 0.4s ease;
+				z-index: 20;
+				pointer-events: auto; /* allow clicks */
+			}
+
+			/* "fullscreen-ish" expanded minimap */
+			#minimap.expanded {
+				width: min(72vw, 720px);
+				height: min(72vw, 720px);
+				top: 50%;
+				left: 50%;
+				right: auto;
+				transform: translate(-50%, -50%);
+				border-radius: 12px;
+				box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8),
+					0 0 40px rgba(255, 255, 255, 0.12);
+				border: 4px solid rgba(255, 255, 255, 0.08);
+			}
+
+			/* miniRenderer's canvas should fill container */
+			#minimap canvas {
+				width: 100%;
+				height: 100%;
+				display: block;
+				object-fit: cover;
+				pointer-events: none; /* we handle clicks on container */
+			}
+
+			/* HUD canvas over everything for 2D arrows, etc */
+			#hud {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				pointer-events: none; /* let clicks fall through to minimap / main canvas */
+				z-index: 40;
+			}
+
+			/* optional small label in minimap corner */
+			#minimapLabel {
+				position: absolute;
+				left: 8px;
+				bottom: 8px;
+				color: rgba(255, 255, 255, 0.9);
+				font-family: system-ui, Segoe UI, Roboto, Arial;
+				font-size: 12px;
+				text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+				pointer-events: none;
+				z-index: 30;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="minimap" title="Click to expand minimap (does not lock pointer)">
+			<div id="minimapLabel">Orbital View</div>
+		</div>
+		<canvas id="hud"></canvas>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.module.js",
+					"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.157.0/examples/jsm/"
+				}
+			}
+		</script>
+
 		<script type="module">
 			import * as THREE from 'three';
 			import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
-			//Basic scene setup
+			// ---------- basic scene, main renderer ----------
 			const scene = new THREE.Scene();
-			scene.background = new THREE.Color(0x000000);
+			scene.background = new THREE.Color(0x000009);
 
 			const camera = new THREE.PerspectiveCamera(
 				75,
-				window.innerWidth / window.innerHeight,
+				innerWidth / innerHeight,
 				0.1,
-				1000
+				2000
 			);
-			camera.position.set(0, 2, 5);
+			camera.position.set(0, 2, 8);
 
 			const renderer = new THREE.WebGLRenderer({ antialias: true });
-			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(innerWidth, innerHeight);
+			renderer.setClearColor(0x0a0a0d, 1);
 			document.body.appendChild(renderer.domElement);
 
-			//Lighting
-			const sunLight = new THREE.PointLight(0xffffff, 10);
-			sunLight.position.set(0, 0, 0); //Sun position
+			// ---------- mini renderer in circular DOM container ----------
+			const miniMapContainer = document.getElementById('minimap');
+			const miniRenderer = new THREE.WebGLRenderer({
+				antialias: true,
+				alpha: true,
+			}); // alpha optional
+			miniRenderer.setPixelRatio(window.devicePixelRatio);
+			miniRenderer.setSize(
+				miniMapContainer.clientWidth,
+				miniMapContainer.clientHeight
+			);
+			miniMapContainer.appendChild(miniRenderer.domElement);
+
+			// mini camera: top-down orbital view centered on the Sun
+			const miniCamera = new THREE.PerspectiveCamera(60, 1, 0.1, 2000);
+
+			// ---------- HUD canvas for 2D arrow ----------
+			const hud = document.getElementById('hud');
+			const ctx = hud.getContext('2d');
+
+			function resizeHud() {
+				hud.width = innerWidth;
+				hud.height = innerHeight;
+			}
+			resizeHud();
+
+			// ---------- lights ----------
+			const sunLight = new THREE.PointLight(0xffffff, 3, 500);
+			sunLight.position.set(0, 0, 0);
 			scene.add(sunLight);
 
-			const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-			scene.add(ambientLight);
+			const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+			scene.add(ambient);
 
-			//Sun
-			const sunGeometry = new THREE.SphereGeometry(1, 32, 32);
-			const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-			const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+			// ---------- Sun + planets ----------
+			const sunGeo = new THREE.SphereGeometry(1.6, 32, 32);
+			const sunMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
+			const sun = new THREE.Mesh(sunGeo, sunMat);
+			sun.position.set(0, 0, 0);
 			scene.add(sun);
 
-			//Single Planet
-			const planetGeometry = new THREE.SphereGeometry(0.3, 32, 32);
-			const planetMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-			const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-			planet.position.x = 5;
+			const planet = new THREE.Mesh(
+				new THREE.SphereGeometry(0.3, 24, 24),
+				new THREE.MeshPhongMaterial({ color: 0x44ff77 })
+			);
+			planet.position.set(5, 0, 0);
 			scene.add(planet);
 
-			//First-person controls
+			const planet2 = new THREE.Mesh(
+				new THREE.SphereGeometry(0.9, 32, 32),
+				new THREE.MeshPhongMaterial({ color: 0xff4444 })
+			);
+			planet2.position.set(18, 0, 0);
+			scene.add(planet2);
+
+			const moon = new THREE.Mesh(
+				new THREE.SphereGeometry(0.12, 16, 16),
+				new THREE.MeshPhongMaterial({ color: 0xf0f0f0 })
+			);
+			moon.position.set(20, 0, 0);
+			scene.add(moon);
+
+			// stars (points)
+			function createStars(count) {
+				const g = new THREE.BufferGeometry();
+				const arr = new Float32Array(count * 3);
+				for (let i = 0; i < count; i++) {
+					arr[i * 3 + 0] = (Math.random() - 0.5) * 1200;
+					arr[i * 3 + 1] = (Math.random() - 0.5) * 1200;
+					arr[i * 3 + 2] = (Math.random() - 0.5) * 1200;
+				}
+				g.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+				const mat = new THREE.PointsMaterial({
+					size: 0.6,
+					sizeAttenuation: true,
+					color: 0xddddff,
+				});
+				const pts = new THREE.Points(g, mat);
+				scene.add(pts);
+			}
+			createStars(1200);
+
+			// ---------- controls ----------
 			const controls = new PointerLockControls(camera, renderer.domElement);
 
-			const topDownBtn = document.getElementById(`topDownBtn`);
-			topDownBtn.addEventListener('click', () => {
-				//Move camera above the solar system
-				camera.position.set(0, 50, 0); //Y=50 to be high up
-				camera.lookAt(0, 0, 0); //Look at the center (Sun)
-
-				//Update the target
-				controls.getObject().position.copy(camera.position);
-			});
-			document.addEventListener('click', () => {
-				controls.lock(); //Click to engage first-person view
+			// lock only when clicking the main 3D canvas (not when clicking minimap)
+			renderer.domElement.addEventListener('click', () => {
+				controls.lock();
 			});
 
-			//Movement Variable
+			// movement keys
 			const move = { forward: false, backward: false, left: false, right: false };
-			document.addEventListener('keydown', (e) => {
+			window.addEventListener('keydown', (e) => {
 				if (e.code === 'KeyW') move.forward = true;
 				if (e.code === 'KeyS') move.backward = true;
 				if (e.code === 'KeyA') move.left = true;
 				if (e.code === 'KeyD') move.right = true;
 			});
-			document.addEventListener('keyup', (e) => {
+			window.addEventListener('keyup', (e) => {
 				if (e.code === 'KeyW') move.forward = false;
 				if (e.code === 'KeyS') move.backward = false;
 				if (e.code === 'KeyA') move.left = false;
 				if (e.code === 'KeyD') move.right = false;
 			});
 
-			function createStars(count) {
-				const geometry = new THREE.BufferGeometry();
-				const positions = [];
+			// ---------- minimap expand toggle ----------
+			miniMapContainer.addEventListener('click', (ev) => {
+				// prevent pointerlock click handler on main canvas
+				ev.stopPropagation();
+				miniMapContainer.classList.toggle('expanded');
+				updateMiniSize();
+				setTimeout(resizeMiniRenderer, 10);
+			});
 
-				for (let idx = 0; idx < count; idx++) {
-					const x = (Math.random() - 0.5) * 1000; //Spead in X
-					const y = (Math.random() - 0.5) * 1000; //Spead in Y
-					const z = (Math.random() - 0.5) * 1000; //Spead in Z
-					positions.push(x, y, z);
-				}
-
-				geometry.setAttribute(
-					'position',
-					new THREE.Float32BufferAttribute(positions, 3)
+			// handle resizing / expansion for mini renderer sizes
+			function updateMiniSize() {
+				// compute CSS size of container
+				const rect = miniMapContainer.getBoundingClientRect();
+				miniRenderer.setSize(
+					Math.max(2, rect.width),
+					Math.max(2, rect.height)
 				);
-
-				const material = new THREE.PointsMaterial({
-					color: 0xdddddd,
-					size: 0.5, //tiny dots
-					sizeAttenuation: true,
-				});
-
-				const stars = new THREE.Points(geometry, material);
-				scene.add(stars);
+				// update aspect ratio of mini camera
+				miniCamera.aspect = rect.width / rect.height;
+				miniCamera.updateProjectionMatrix();
 			}
-			createStars(1000);
+			// initial
+			updateMiniSize();
 
-			function animate() {
+			function resizeMiniRenderer() {
+				const rect = miniMapContainer.getBoundingClientRect();
+				miniRenderer.setSize(rect.width, rect.height);
+			}
+
+			// --------- helper: world radius shown in minimap ----------
+			// How far the minimap shows out from the Sun (in world units).
+			// Adjust to taste: smaller = zoom in, larger = zoom out.
+			const MINI_WORLD_RADIUS = 60;
+
+			// ---------- HUD drawing: player arrow rendered over minimap ----------
+			function drawHUD() {
+				const cx = hud.width - 85;
+				const cy = 85;
+
+				const size = 10; // smaller arrow
+
+				// Get camera direction (properly for PointerLockControls)
+				const dir = new THREE.Vector3();
+				camera.getWorldDirection(dir);
+
+				// Convert to rotation angle for HUD compass
+				const angle = Math.atan2(dir.x, dir.z);
+
+				ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+				ctx.save();
+				ctx.translate(cx, cy);
+				ctx.rotate(angle);
+
+				// Draw triangle arrow
+				ctx.beginPath();
+				ctx.moveTo(0, -size);
+				ctx.lineTo(size * 0.6, size);
+				ctx.lineTo(-size * 0.6, size);
+				ctx.closePath();
+
+				ctx.fillStyle = 'red';
+				ctx.fill();
+
+				ctx.restore();
+			}
+
+			// ---------- animation / render loop ----------
+			let last = performance.now();
+			function animate(t) {
 				requestAnimationFrame(animate);
+				const dt = Math.min(0.05, (t - last) / 1000);
+				last = t;
 
-				//Basic Movement
-				const speed = 0.1;
+				// simple orbital motion for planets to make scene dynamic
+				const time = t * 0.0003;
+				planet.position.x = Math.cos(time * 1.2) * 5;
+				planet.position.z = Math.sin(time * 1.2) * 5;
+				planet.rotation.y += 0.01;
+				planet2.position.x = Math.cos(time * 0.7) * 18;
+				planet2.position.z = Math.sin(time * 0.7) * 18;
+				moon.position.x = planet2.position.x + Math.cos(time * 3.4) * 2.2;
+				moon.position.z = planet2.position.z + Math.sin(time * 3.4) * 2.2;
+
+				// movement from controls
+				const speed = 10 * dt; // world units per second scale
 				if (move.forward) controls.moveForward(speed);
 				if (move.backward) controls.moveForward(-speed);
 				if (move.left) controls.moveRight(-speed);
 				if (move.right) controls.moveRight(speed);
 
+				// main render
+				renderer.setViewport(0, 0, innerWidth, innerHeight);
+				renderer.setScissorTest(false);
+				renderer.clear();
 				renderer.render(scene, camera);
+
+				// update miniCamera to be above SUN always
+				const above = 65; // height above sun
+				// when expanded we may want to zoom closer; compute height depending on size
+				if (miniMapContainer.classList.contains('expanded')) {
+					// larger view -> smaller world radius visible (zoom in)
+					miniCamera.position.set(
+						sun.position.x,
+						above * 0.9,
+						sun.position.z
+					);
+					miniCamera.lookAt(sun.position);
+					// optionally adjust mini world radius when expanded
+					// (left as fixed for simplicity)
+				} else {
+					miniCamera.position.set(
+						sun.position.x,
+						above,
+						sun.position.z
+					);
+					miniCamera.lookAt(sun.position);
+				}
+
+				// render into minimap renderer (it lives inside DOM container which clips to circle)
+				miniRenderer.render(scene, miniCamera);
+
+				// draw HUD arrow + overlays
+				drawHUD();
 			}
-			animate();
+			animate(0);
+
+			// handle window resize
+			window.addEventListener('resize', () => {
+				camera.aspect = innerWidth / innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize(innerWidth, innerHeight);
+				resizeHud();
+				updateMiniSize();
+			});
+
+			// ensure initial sizes are correct in case fonts or CSS changed
+			updateMiniSize();
+			resizeHud();
+
+			// Prevent accidental selection / middle-click drag weirdness
+			document.addEventListener(
+				'pointerdown',
+				(e) => {
+					// if interacting with minimap container, stop pointer lock from following through
+					if (miniMapContainer.contains(e.target)) {
+						e.stopPropagation();
+					}
+				},
+				true
+			);
 		</script>
 	</body>
 </html>
