@@ -3,18 +3,12 @@
 
 'use strict';
 
+let togglePause;
+
 //Exports a setupInput helper to wire input handlers into the p5 sketch
 export function setupInput(opts = {}) {
-	const {
-		s,
-		getTime,
-		onCameraSelect,
-		onCameraMove,
-		onCameraRemove,
-		onWheel,
-		togglePause,
-		setTime,
-	} = opts;
+	const { s, getTime, onCameraSelect, onCameraMove, onCameraRemove, onWheel, setTime } = opts;
+	togglePause = opts.togglePause;
 
 	s.mousePressed = () => {
 		if (s.mouseY < 40) return;
@@ -33,3 +27,6 @@ export function setupInput(opts = {}) {
 		if (key == `ArrowDown` || key == `ArrowLeft`) setTime?.(Math.max(getTime() - 1, 1));
 	};
 }
+
+const pauseBtn = document.getElementById('pause');
+pauseBtn.addEventListener('click', togglePause);

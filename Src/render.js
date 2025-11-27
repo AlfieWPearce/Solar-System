@@ -29,11 +29,11 @@ export function draw(s, options) {
 	s.pop();
 
 	//Top UI Band
-	s.fill(200, 200);
+	s.fill(200, 200, 200, 200);
 	s.rect(0, 0, window.innerWidth, 40);
 
 	if (paused) {
-		s.fill(0);
+		s.fill(0, 0, 0);
 		s.textAlign(s.CENTER, s.TOP);
 		s.textSize(30);
 		s.text(`PAUSED`, window.innerWidth / 2, 5);
@@ -83,7 +83,7 @@ export function drawTrail(s, body) {
  * @param {CelestialBody} target The target the camera is following
  */
 export function drawInformation(s, target) {
-	s.fill(0);
+	s.fill(0, 0, 0);
 	s.textSize(20);
 	s.textAlign(s.LEFT, s.TOP);
 	if (target.label) s.text(target.label, 10, 10);
@@ -93,7 +93,7 @@ export function drawInformation(s, target) {
 	if (target.nickname) s.text(`(${target.nickname})`, 20 + w, 17);
 	s.textStyle(s.NORMAL);
 
-	s.fill(200, 200);
+	s.fill(200, 200, 200, 200);
 	s.text(`${target.mass / 1000}Mg`, 10, 50);
 	s.text(`${target.radius}km`, 10, 70);
 	s.text(
