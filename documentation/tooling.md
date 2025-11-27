@@ -6,6 +6,7 @@ At present the main purposes of the toolchain are:
 
 - Running ESLint for code coorectness
 - Running Prettier for formatting
+- Running Vite to run and compile
 - Keeping dependencies organised
 - Preparing a foundation for future bundlers
 
@@ -45,4 +46,23 @@ Run it with:
 
 ```bash
 npm run format
+```
+
+### 3. Vite
+
+configuration: `vite.config.js`
+
+Used to:
+
+- Serve ES modules natively
+- Update browser instantly on changes
+- Bundle the project into an optimised `/dist` folder for deployment
+- Works cleanly with libraries like p5.js & three.js
+
+Run it with:
+
+```bash
+npm run dev
+npm run build
+npm run preview
 ```

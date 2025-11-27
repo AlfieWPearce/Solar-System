@@ -6,7 +6,11 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint Src/**/*.js",
-		"lint:fix": "eslint Src/**/*.js --fix"
+		"lint:fix": "eslint Src/**/*.js --fix",
+		"format": "prettier -- write .",
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
 	},
 	"repository": {
 		"type": "git",
@@ -27,6 +31,11 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-prettier": "^5.5.4",
 		"globals": "^16.5.0",
-		"prettier": "^3.6.2"
+		"prettier": "^3.6.2",
+		"vite": "^7.2.4"
+	},
+	"dependencies": {
+		"p5": "^2.1.1",
+		"three": "^0.181.2"
 	}
 }
