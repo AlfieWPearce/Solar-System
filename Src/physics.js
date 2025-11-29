@@ -23,6 +23,7 @@ export function updateBodies(allBodies, data, trailLength = 0) {
 	for (let b of allBodies) {
 		b.pos[0] += b.velocity[0];
 		b.pos[1] += b.velocity[1];
+		b.mesh.position.set(b.pos[0], b.pos[1], 0);
 
 		//Trails
 		if (trailLength > 0) {

@@ -9,7 +9,7 @@ export class CelestialBody {
 	 * @param {number} radius rendered radius (and mass proxy)
 	 * @param {[number,number]} initialVelocity initial velocity vectpr
 	 */
-	constructor(label, nickname, pos, radius, initialVelocity, density) {
+	constructor(THREE, label, nickname, pos, radius, initialVelocity, density) {
 		this.label = label;
 		this.nickname = nickname;
 
@@ -29,7 +29,14 @@ export class CelestialBody {
 		//Copy velocity to avid aliasing
 		this.velocity = [...initialVelocity];
 
-		//Trail - small buffer of previous positions
-		this.trail = [];
+		const geom = new THREE.SphereGeometry(this.radius, 32, 32);
+		const mat = new THREE.MeshStandardMaterial({
+			color: new THREE.Color().setRGB(
+				this.colour[0] / 255,
+				this.colour[1] / 255,
+				this.colour[2] / 255
+			),
+		});
+		this.mesh = new THREE.Mesh(geom, mat);
 	}
 }
