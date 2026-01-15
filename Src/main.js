@@ -5,7 +5,7 @@
 
 //Imports
 // import * as p5 from 'p5';
-import * as THREE from 'three';
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.js';
 
 import CameraController from './camera.js';
 import { CelestialBody } from './celestialBody.js';
