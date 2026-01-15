@@ -1,0 +1,23 @@
+{
+	"planet": {
+		"radius": 100,
+		"mass": 1250
+	},
+	"player": {
+		"height": 1.8,
+		"walkSpeed": 5,
+		"jumpStrength": 6.5
+	},
+	"camera": {
+		"fov": 75,
+		"near": 0.1,
+		"far": 1e6
+	},
+	"input": {
+		"minPitch": -80,
+		"maxPitch": 80
+	},
+	"physics": {
+		"G": 0.08
+	}
+}
