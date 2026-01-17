@@ -25,9 +25,17 @@ Next steps include: future pathing, leapfrog integration, realistic scaling and 
 **--**
 
 **-- How to Use--**
-1. Open: [Click me!](https://alfiewpearce.github.io/Solar-System/)
-2. Watch the planets do their thing
-3. (In future versions) tinker with speeds, spawn bodies, or switch renderers
+1. ~~Open: [Click me!](https://alfiewpearce.github.io/Solar-System/)~~
+The above doens't currently work due to an issue I am working to resolve, so, in the meantime, the only solution is to clone this repository and run using Vite:
+`
+git clone https://github.com/AlfieWPearce/Solar-System.git
+cd Solar-System
+npm install
+npm run dev
+`
+Then you can open your project in a browser, usually at [http://localhost:5173](http://localhost:5173)
+3. Watch the planets do their thing
+4. (In future versions) tinker with speeds, spawn bodies, or switch renderers
    
 **--**
 
