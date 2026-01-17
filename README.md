@@ -35,6 +35,7 @@ npm install
 npm run dev
 ```
 Then you can open your project in a browser, usually at [http://localhost:5173](http://localhost:5173)  
+  
 3. Watch the planets do their thing
 4. (In future versions) tinker with speeds, spawn bodies, or switch renderers
    
