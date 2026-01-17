@@ -1,7 +1,7 @@
 //camera.js
 // -- Camera / view controls (panning, zoom, follow)
 
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.js';
+import * as THREE from 'three';
 import { dragSafeZone, scrollSafeZone } from './main.js';
 
 export default class CameraController {

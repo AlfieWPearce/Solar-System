@@ -2,7 +2,7 @@
 //Pure rendering
 'use strict';
 
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.js';
+import * as THREE from 'three';
 
 export function createRenderer() {
 	const renderer = new THREE.WebGLRenderer({ antialias: true });
