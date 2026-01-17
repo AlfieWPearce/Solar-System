@@ -27,7 +27,7 @@ Next steps include: future pathing, leapfrog integration, realistic scaling and 
 **-- How to Use--**
 1. ~~Open: [Click me!](https://alfiewpearce.github.io/Solar-System/)~~
    
-The above doens't currently work due to an issue I am working to resolve, so, in the meantime, the only solution is to clone this repository and run using Vite:
+The above doesn't currently work due to an issue I am working to resolve, so, in the meantime, the only solution is to clone this repository and run using Vite:
 ```bash
 git clone https://github.com/AlfieWPearce/Solar-System.git
 cd Solar-System
