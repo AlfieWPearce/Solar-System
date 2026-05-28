@@ -6,6 +6,8 @@ Solar System is a long-term physics simulation project that will evolve from a s
 Currently, it's a p5.js-based 2D system featuring realistic Newtonian gravity and basic orbital physics.
 Next steps include: future pathing, leapfrog integration, realistic scaling and 3D.
 
+## **This is currently being remade in Unity for greater capactiy with player controls**
+
 **-- Features (Current) --**
 - 2D orbital simulation in p5.js
 - Configurable bodies, masses, and initial conditions and universal constants
